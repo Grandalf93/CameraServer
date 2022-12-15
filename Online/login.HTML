@@ -1,0 +1,337 @@
+<!doctype html>
+<html>
+    <head>
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <style>
+            body {
+                font-family: "Courier New", monospace;
+            }
+            
+            .main-head {
+                height: 150px;
+                background: whitesmoke;
+            }
+            
+            .sidenav {
+                height: 100%;
+                background-image: linear-gradient(rgb(16, 187, 245),rgb(37, 247, 37));
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-color: whitesmoke;
+                overflow-x: hidden;
+                padding-top: 20px;
+            }
+            
+            .main {
+                padding: 0px 10px;
+            }
+            
+            @media screen and (max-height: 450px) {
+                .sidenav {
+                padding-top: 15px;
+                }
+            }
+            
+            @media screen and (max-width: 450px) {
+                .image-container {
+                margin-top: 20%;
+                } 
+
+            }
+            
+            @media screen and (min-width: 768px) {
+                .main {
+                margin-left: 40%;
+                }
+            
+                .sidenav {
+                width: 40%;
+                position: fixed;
+                z-index: 1;
+                top: 0;
+                left: 0;
+                }  
+
+                .commands #UpButton{        
+                margin-left: 160px;
+                }
+
+                .commands #LeftButton{ 
+                margin-left: 55px;
+                }
+
+                .commands #DownButton{ 
+                margin-top: 10px; ;       
+                margin-left: 160px;
+                }             
+            }
+
+            button {  
+            
+                display: block;
+                margin: 5px;
+                padding: 0 12px;
+                border: 0;
+                line-height: 28px;
+                cursor: pointer;
+                color: #fff;
+                background: #3094ff;
+                border-radius: 5px;
+                font-size: 16px;
+                outline: 0
+            }
+            
+            .login-main-text {
+                margin-top: 10px;
+                padding: 40px;
+                color: #000;
+            }
+            
+            .login-main-text h2 {
+                font-weight: 300;
+            }
+            
+            .btn-black {            
+                background-color: #08577f !important;  
+                color: #fff;            
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="sidenav">
+            <div class="login-main-text">
+                <h2>COMANDO DE CONTROL Y CONFIGURACION</h2>                    
+            </div>
+
+            <section class="commands" >
+                <input type="image" src="https://static.thenounproject.com/png/1384177-200.png" id="UpButton"/>
+                <input type="image" src="https://static.thenounproject.com/png/607543-200.png" id="LeftButton"/>
+                <input type="image" src="https://static.thenounproject.com/png/1384180-200.png" id="RightButton"/>       
+                <input type="image" src="https://static.thenounproject.com/png/1384181-200.png" id="DownButton"/>
+            </section>
+
+            <section id="buttons">
+                <button id="toggle-stream">Start Stream</button>
+                <!--Agregar botón de audio-->
+            </section>
+            
+        </div>
+
+        <div class="main">
+            <div class="col-md-6 col-sm-12" >
+                <figure>
+                    <div class="stream-container hidden" id="stream-container">
+                        <img id="stream" src="">
+                    </div>
+                </figure>
+            </div>  
+        </div>
+
+        <!--<script src="js/login.js"></script>-->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>        
+        <script>
+            document.addEventListener('DOMContentLoaded', function (event) {
+            var baseHost = document.location.origin
+            var streamUrl = baseHost + ':81'
+
+            const hide = el => {
+                el.classList.add('hidden')
+            }
+            const show = el => {
+                el.classList.remove('hidden')
+            }
+
+            const disable = el => {
+                el.classList.add('disabled')
+                el.disabled = true
+            }
+
+            const enable = el => {
+                el.classList.remove('disabled')
+                el.disabled = false
+            }
+
+            const updateValue = (el, value, updateRemote) => {
+                updateRemote = updateRemote == null ? true : updateRemote
+                let initialValue
+                if (el.type === 'checkbox') {
+                initialValue = el.checked
+                value = !!value
+                el.checked = value
+                } else {
+                initialValue = el.value
+                el.value = value
+                }
+
+                if (updateRemote && initialValue !== value) {
+                updateConfig(el);
+                } else if(!updateRemote){
+                if(el.id === "aec"){
+                    value ? hide(exposure) : show(exposure)
+                } else if(el.id === "agc"){
+                    if (value) {
+                    show(gainCeiling)
+                    hide(agcGain)
+                    } else {
+                    hide(gainCeiling)
+                    show(agcGain)
+                    }
+                } else if(el.id === "awb_gain"){
+                    value ? show(wb) : hide(wb)
+                } else if(el.id === "face_recognize"){
+                    value ? enable(enrollButton) : disable(enrollButton)
+                }
+                }
+            }
+
+            function updateConfig (el) {
+                let value
+                switch (el.type) {
+                case 'checkbox':
+                    value = el.checked ? 1 : 0
+                    break
+                case 'range':
+                case 'select-one':
+                    value = el.value
+                    break
+                case 'button':
+                case 'submit':
+                    value = '1'
+                    break
+                default:
+                    return
+                }
+
+                const query = `${baseHost}/control?var=${el.id}&val=${value}`
+
+                fetch(query)
+                .then(response => {
+                    console.log(`request to ${query} finished, status: ${response.status}`)
+                })
+            }
+
+            document
+                .querySelectorAll('.close')
+                .forEach(el => {
+                el.onclick = () => {
+                    hide(el.parentNode)
+                }
+                })
+
+            // read initial values
+            fetch(`${baseHost}/status`)
+                .then(function (response) {
+                return response.json()
+                })
+                .then(function (state) {
+                document
+                    .querySelectorAll('.default-action')
+                    .forEach(el => {
+                    updateValue(el, state[el.id], false)
+                    })
+                })
+
+            const view = document.getElementById('stream')
+            const viewContainer = document.getElementById('stream-container')     
+            const streamButton = document.getElementById('toggle-stream')
+
+
+
+
+            const startStream = () => {
+                view.src = `${streamUrl}/stream`
+                show(viewContainer)
+                streamButton.innerHTML = 'Stop Stream'
+            }
+
+
+            streamButton.onclick = () => {
+                const streamEnabled = streamButton.innerHTML === 'Stop Stream'
+                if (streamEnabled) {
+                stopStream()
+                } else {
+                startStream()
+                }
+            }
+
+            // Attach default on change action
+            document
+                .querySelectorAll('.default-action')
+                .forEach(el => {
+                el.onchange = () => updateConfig(el)
+                })
+
+            // Custom actions
+            // Gain
+            // const agc = document.getElementById('agc')
+            // const agcGain = document.getElementById('agc_gain-group')
+            // const gainCeiling = document.getElementById('gainceiling-group')
+            // agc.onchange = () => {
+            //     updateConfig(agc)
+            //     if (agc.checked) {
+            //     show(gainCeiling)
+            //     hide(agcGain)
+            //     } else {
+            //     hide(gainCeiling)
+            //     show(agcGain)
+            //     }
+            // }
+
+            // // Exposure
+            // const aec = document.getElementById('aec')
+            // const exposure = document.getElementById('aec_value-group')
+            // aec.onchange = () => {
+            //     updateConfig(aec)
+            //     aec.checked ? hide(exposure) : show(exposure)
+            // }
+
+            // // AWB
+            // const awb = document.getElementById('awb_gain')
+            // const wb = document.getElementById('wb_mode-group')
+            // awb.onchange = () => {
+            //     updateConfig(awb)
+            //     awb.checked ? show(wb) : hide(wb)
+            // }
+
+            // Detection and framesize
+            // const detect = document.getElementById('face_detect')
+            // const recognize = document.getElementById('face_recognize')
+            const framesize = "4"
+
+            framesize.onchange = () => {
+                updateConfig(framesize)
+            }
+
+            // detect.onchange = () => {
+            //     if (framesize.value > 5) {
+            //     alert("Please select CIF or lower resolution before enabling this feature!");
+            //     updateValue(detect, false)
+            //     return;
+            //     }
+            //     updateConfig(detect)
+            //     if (!detect.checked) {
+            //     disable(enrollButton)
+            //     updateValue(recognize, false)
+            //     }
+            // }
+
+            // recognize.onchange = () => {
+            //     if (framesize.value > 5) {
+            //     alert("Please select CIF or lower resolution before enabling this feature!");
+            //     updateValue(recognize, false)
+            //     return;
+            //     }
+            //     updateConfig(recognize)
+            //     if (recognize.checked) {
+            //     enable(enrollButton)
+            //     updateValue(detect, true)
+            //     } else {
+            //     disable(enrollButton)
+            //     }
+            // }
+            })
+        </script>        
+        </body>
+</html>

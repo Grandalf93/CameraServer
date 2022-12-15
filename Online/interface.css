@@ -1,0 +1,98 @@
+body {
+    font-family: "Courier New", monospace;
+  }
+  
+  .main-head {
+    height: 150px;
+    background: whitesmoke;
+  }
+  
+  .sidenav {
+    height: 100%;
+    background-image: linear-gradient(rgb(16, 187, 245),rgb(37, 247, 37));
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: whitesmoke;
+    overflow-x: hidden;
+    padding-top: 20px;
+  }
+  
+  .main {
+    padding: 0px 10px;
+  }
+  
+  @media screen and (max-height: 450px) {
+    .sidenav {
+      padding-top: 15px;
+    }
+  }
+  
+  @media screen and (max-width: 450px) {
+    .image-container {
+      margin-top: 20%;
+    } 
+
+  }
+  
+  @media screen and (min-width: 768px) {
+    .main {
+      margin-left: 40%;
+    }
+  
+    .sidenav {
+      width: 40%;
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      left: 0;
+    }  
+
+    .commands #UpButton{        
+      margin-left: 160px;
+    }
+
+    .commands #LeftButton{ 
+      margin-left: 55px;
+    }
+
+    .commands #DownButton{ 
+      margin-top: 10px; ;       
+      margin-left: 160px;
+    } 
+   
+  }
+
+  button {  
+  
+    display: block;
+    margin: 5px;
+    padding: 0 12px;
+    border: 0;
+    line-height: 28px;
+    cursor: pointer;
+    color: #fff;
+    background: #3094ff;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: 0
+
+  }
+  
+  .login-main-text {
+    margin-top: 10px;
+    padding: 40px;
+    color: #000;
+  }
+  
+  .login-main-text h2 {
+    font-weight: 300;
+  }
+  
+  .btn-black {
+  
+    background-color: #08577f !important;  
+    color: #fff;
+  
+  }
+
+  
