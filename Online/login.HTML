@@ -52,7 +52,7 @@
                 left: 0;
                 }  
 
-                .commands #UpButton{        
+                .commands #up_button{        
                 margin-left: 160px;
                 }
 
@@ -105,7 +105,7 @@
             </div>
 
             <section class="commands" >
-                <input type="image" src="https://static.thenounproject.com/png/1384177-200.png" id="UpButton"/>
+                <input type="image" src="https://static.thenounproject.com/png/1384177-200.png" id="up_button"/>
                 <input type="image" src="https://static.thenounproject.com/png/607543-200.png" id="LeftButton"/>
                 <input type="image" src="https://static.thenounproject.com/png/1384180-200.png" id="RightButton"/>       
                 <input type="image" src="https://static.thenounproject.com/png/1384181-200.png" id="DownButton"/>
@@ -196,9 +196,10 @@
                 case 'select-one':
                     value = el.value
                     break
-                case 'button':
+                case 'button': //AGREGAR CONDICIONALES MOTOR
                 case 'submit':
                     value = '1'
+                    console.log(`Boton presionado`)
                     break
                 default:
                     return
@@ -210,7 +211,16 @@
                 .then(response => {
                     console.log(`request to ${query} finished, status: ${response.status}`)
                 })
+            } 
+            
+            function updateMotor(status){
+                const motorQuery = `${baseHost}/motor?var=${status.id}`
+                fetch(motorQuery)
+                .then(response => {
+                    console.log(`request to ${motorQuery} finished, status: ${response.status}`)
+                })
             }
+         
 
             document
                 .querySelectorAll('.close')
@@ -263,75 +273,61 @@
                 el.onchange = () => updateConfig(el)
                 })
 
-            // Custom actions
-            // Gain
-            // const agc = document.getElementById('agc')
-            // const agcGain = document.getElementById('agc_gain-group')
-            // const gainCeiling = document.getElementById('gainceiling-group')
-            // agc.onchange = () => {
-            //     updateConfig(agc)
-            //     if (agc.checked) {
-            //     show(gainCeiling)
-            //     hide(agcGain)
-            //     } else {
-            //     hide(gainCeiling)
-            //     show(agcGain)
-            //     }
-            // }
-
-            // // Exposure
-            // const aec = document.getElementById('aec')
-            // const exposure = document.getElementById('aec_value-group')
-            // aec.onchange = () => {
-            //     updateConfig(aec)
-            //     aec.checked ? hide(exposure) : show(exposure)
-            // }
-
-            // // AWB
-            // const awb = document.getElementById('awb_gain')
-            // const wb = document.getElementById('wb_mode-group')
-            // awb.onchange = () => {
-            //     updateConfig(awb)
-            //     awb.checked ? show(wb) : hide(wb)
-            // }
-
-            // Detection and framesize
-            // const detect = document.getElementById('face_detect')
-            // const recognize = document.getElementById('face_recognize')
             const framesize = "4"
 
             framesize.onchange = () => {
                 updateConfig(framesize)
             }
 
-            // detect.onchange = () => {
-            //     if (framesize.value > 5) {
-            //     alert("Please select CIF or lower resolution before enabling this feature!");
-            //     updateValue(detect, false)
-            //     return;
-            //     }
-            //     updateConfig(detect)
-            //     if (!detect.checked) {
-            //     disable(enrollButton)
-            //     updateValue(recognize, false)
-            //     }
-            // }
+            class ClickAndHold {
+                /**
+                 * 
+                 * @param {EventTarget} target the HTML element to apply the event to
+                 * @param {Function} callback  The function to run once the target is clicked and held
+                 */
 
-            // recognize.onchange = () => {
-            //     if (framesize.value > 5) {
-            //     alert("Please select CIF or lower resolution before enabling this feature!");
-            //     updateValue(recognize, false)
-            //     return;
-            //     }
-            //     updateConfig(recognize)
-            //     if (recognize.checked) {
-            //     enable(enrollButton)
-            //     updateValue(detect, true)
-            //     } else {
-            //     disable(enrollButton)
-            //     }
-            // }
+                constructor(target, callback){
+                    this.target = target;
+                    this.callback = callback;
+                    this.isHeld = false;
+                    this.activeHoldTimeoutId = null; 
+
+                    ["mousedown", "touchstart"].forEach(type =>{
+                        this.target.addEventListener(type, this._onHoldStart.bind(this));
+                    });
+
+                    ["mouseup","mouseleave", "mouseout"].forEach(type => {
+                        this.target.addEventListener(type, this._onHoldEnd.bind(this));
+                    });
+
+
+                }
+
+                _onHoldStart() {
+                    this.isHeld = true;
+                            this.activeHoldTimeoutId = setTimeout(() => {if (this.isHeld){
+                            this.callback(); 
+                        }
+                },1000 )
+                    
+                }
+
+                _onHoldEnd() {
+                    this.isHeld = false;
+                    clearTimeout(this.activeHoldTimeoutId);
+                }
+            }
+
+            const myButton =  document.getElementById("up_button");
+
+            new ClickAndHold(myButton, () =>{
+                updateMotor(myButton);
+                alert("Click and hold");
             })
+
+            })
+
+        
         </script>        
         </body>
 </html>

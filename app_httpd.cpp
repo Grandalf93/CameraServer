@@ -518,6 +518,7 @@ static esp_err_t cmd_handler(httpd_req_t *req){
         }
     }
     else if(!strcmp(variable, "face_enroll")) is_enrolling = val;
+    // else if(!strcmp(variable, "up_button")) digitalWrite(4, HIGH); //OJOOOOOOOOOOOOOOOO
     else if(!strcmp(variable, "face_recognize")) {
         recognition_enabled = val;
         if(recognition_enabled){
@@ -588,6 +589,49 @@ static esp_err_t index_handler(httpd_req_t *req){
     return httpd_resp_send(req, (const char *)index_ov2640_html_gz, index_ov2640_html_gz_len);
 }
 
+static esp_err_t motor_handler(httpd_req_t *req){
+    char*  buf;
+    size_t buf_len;
+    char variable[32] = {0,};
+    char value[32] = {0,};
+
+
+    buf_len = httpd_req_get_url_query_len(req) + 1;
+    if (buf_len > 1) {
+        buf = (char*)malloc(buf_len);
+        if(!buf){
+            httpd_resp_send_500(req);
+            return ESP_FAIL;
+        }
+        if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
+            if (httpd_query_key_value(buf, "var", variable, sizeof(variable)) == ESP_OK ){
+            } else {
+                free(buf);
+                httpd_resp_send_404(req);
+                return ESP_FAIL;
+            }
+        } else {
+            free(buf);
+            httpd_resp_send_404(req);
+            return ESP_FAIL;
+        }
+        free(buf);
+    } else {
+        httpd_resp_send_404(req);
+        return ESP_FAIL;
+    }
+
+    if (!strcmp(variable, "up_button")){
+      digitalWrite(4, HIGH);
+      }else {
+        Serial.println("fallo");        
+      }
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    return httpd_resp_send(req, NULL, 0);
+  
+}
+
 void startCameraServer(){
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
 
@@ -627,6 +671,14 @@ void startCameraServer(){
     };
 
 
+    httpd_uri_t motor_uri = {
+        .uri       = "/motor",
+        .method    = HTTP_GET,
+        .handler   = motor_handler,
+        .user_ctx  = NULL
+    };
+
+
     ra_filter_init(&ra_filter, 20);
     
     mtmn_config.type = FAST;
@@ -651,6 +703,7 @@ void startCameraServer(){
         httpd_register_uri_handler(camera_httpd, &cmd_uri);
         httpd_register_uri_handler(camera_httpd, &status_uri);
         httpd_register_uri_handler(camera_httpd, &capture_uri);
+        httpd_register_uri_handler(camera_httpd, &motor_uri); //OJO AGREGADOO, SE DEBE REGISTRAR 
     }
 
     config.server_port += 1;
