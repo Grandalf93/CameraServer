@@ -9,6 +9,25 @@
 #include "fd_forward.h"
 #include "fr_forward.h"
 
+//#define ENROLL_CONFIRM_TIMES 5
+//#define FACE_ID_SAVE_NUMBER 7
+//
+//#define FACE_COLOR_WHITE  0x00FFFFFF
+//#define FACE_COLOR_BLACK  0x00000000
+//#define FACE_COLOR_RED    0x000000FF
+//#define FACE_COLOR_GREEN  0x0000FF00
+//#define FACE_COLOR_BLUE   0x00FF0000
+//#define FACE_COLOR_YELLOW (FACE_COLOR_RED | FACE_COLOR_GREEN)
+//#define FACE_COLOR_CYAN   (FACE_COLOR_BLUE | FACE_COLOR_GREEN)
+//#define FACE_COLOR_PURPLE (FACE_COLOR_BLUE | FACE_COLOR_RED)
+//
+//typedef struct {
+//        size_t size; //number of values used for filtering
+//        size_t index; //current value index
+//        size_t count; //value count
+//        int sum;
+//        int * values; //array to be filled with values
+//} ra_filter_t;
 
 typedef struct {
         httpd_req_t *req;
@@ -278,7 +297,8 @@ static esp_err_t motor_handler(httpd_req_t *req){
             return ESP_FAIL;
         }
         if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
-            if (httpd_query_key_value(buf, "var", variable, sizeof(variable)) == ESP_OK ){
+            if (httpd_query_key_value(buf, "var", variable, sizeof(variable)) == ESP_OK &&
+                httpd_query_key_value(buf, "val", value, sizeof(value)) == ESP_OK){
             } else {
                 free(buf);
                 httpd_resp_send_404(req);
@@ -295,10 +315,14 @@ static esp_err_t motor_handler(httpd_req_t *req){
         return ESP_FAIL;
     }
 
-    if (!strcmp(variable, "up_button")){
+    int val = atoi(value);
+
+    if (!strcmp(variable, "up_button")&&(val==1)){
       digitalWrite(4, HIGH);
+      //Serial.println("el valor es: ", val);
       }else {
-        Serial.println("fallo");        
+        digitalWrite(4, LOW);
+        Serial.println(val);        
       }
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");

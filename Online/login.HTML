@@ -56,11 +56,11 @@
                 margin-left: 160px;
                 }
 
-                .commands #LeftButton{ 
+                .commands #left_button{ 
                 margin-left: 55px;
                 }
 
-                .commands #DownButton{ 
+                .commands #down_button{ 
                 margin-top: 10px; ;       
                 margin-left: 160px;
                 }             
@@ -120,9 +120,9 @@
 
             <section class="commands" >
                 <input type="image" src="https://static.thenounproject.com/png/1384177-200.png" id="up_button"/>
-                <input type="image" src="https://static.thenounproject.com/png/607543-200.png" id="LeftButton"/>
-                <input type="image" src="https://static.thenounproject.com/png/1384180-200.png" id="RightButton"/>       
-                <input type="image" src="https://static.thenounproject.com/png/1384181-200.png" id="DownButton"/>
+                <input type="image" src="https://static.thenounproject.com/png/607543-200.png" id="left_button"/>
+                <input type="image" src="https://static.thenounproject.com/png/1384180-200.png" id="right_button"/>       
+                <input type="image" src="https://static.thenounproject.com/png/1384181-200.png" id="down_button"/>
             </section>
 
             <section id="buttons">
@@ -227,8 +227,8 @@
                 })
             } 
             
-            function updateMotor(status){
-                const motorQuery = `${baseHost}/motor?var=${status.id}`
+            function updateMotor(status, value){
+                const motorQuery = `${baseHost}/motor?var=${status.id}&val=${value}`
                 fetch(motorQuery)
                 .then(response => {
                     console.log(`request to ${motorQuery} finished, status: ${response.status}`)
@@ -320,7 +320,7 @@
                 _onHoldStart() {
                     this.isHeld = true;
                             this.activeHoldTimeoutId = setTimeout(() => {if (this.isHeld){
-                            this.callback(); 
+                            this.callback(this.target, "1"); 
                         }
                 },1000 )
                     
@@ -328,19 +328,23 @@
 
                 _onHoldEnd() {
                     this.isHeld = false;
+                    this.callback(this.target,"0");
                     clearTimeout(this.activeHoldTimeoutId);
+                }
+
+
+                static apply (target, callback){
+                    new ClickAndHold (target, callback)
                 }
             }
 
-            const myButton =  document.getElementById("up_button");
+            const upButton =  document.getElementById("up_button");
+            const leftButton =  document.getElementById("left_button");
+            const downButton =  document.getElementById("down_button");
+            const myButton =  document.getElementById("right_button");
 
-            new ClickAndHold(myButton, () =>{
-                updateMotor(myButton);
-                alert("Click and hold");
+            ClickAndHold.apply(upButton, updateMotor)
             })
-
-            })
-
         
         </script>        
         </body>
