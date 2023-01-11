@@ -46,8 +46,7 @@
                 top: 0;
                 left: 0;
                 }  
-            }
- 
+            } 
 
             .commands #up_button{  
                 margin-top: -80px;              
@@ -370,8 +369,13 @@
             const leftButton =  document.getElementById("left_button");
             const downButton =  document.getElementById("down_button");
             const myButton =  document.getElementById("right_button");
-
             ClickAndHold.apply(upButton, updateMotor)
+
+
+            const motorSpeed = document.getElementById("speed");
+
+            motorSpeed.onchange = () =>{updateMotor(motorSpeed.id, motorSpeed.value)};
+
             })
         
         </script>        
