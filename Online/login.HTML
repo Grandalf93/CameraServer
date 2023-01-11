@@ -8,7 +8,7 @@
             }
             
             .main-head {
-                height: 150px;
+                height: 100px;
                 background: whitesmoke;
             }
             
@@ -32,39 +32,44 @@
                 }
             }
             
-            /* @media screen and (max-width: 450px) {
-                .image-container {
-                margin-top: 20%;
-                } 
-
-            } */
             
-            @media screen and (min-width: 768px) {
+            
+            @media screen and (min-width: 770px) {
                 .main {
                 margin-left: 40%;
                 }
             
                 .sidenav {
-                width: 40%;
+                width: 35%;
                 position: fixed;
                 z-index: 1;
                 top: 0;
                 left: 0;
                 }  
-
-                .commands #up_button{        
-                margin-left: 160px;
-                }
-
-                .commands #left_button{ 
-                margin-left: 55px;
-                }
-
-                .commands #down_button{ 
-                margin-top: 10px; ;       
-                margin-left: 160px;
-                }             
             }
+ 
+
+            .commands #up_button{  
+                margin-top: -80px;              
+                margin-left:160px;
+            }
+
+            .commands #left_button{
+                margin-top: -30px;               
+                margin-left: 55px;
+            }
+
+            .commands #right_button{
+                margin-top: -30px;            
+       
+            }
+
+            .commands #down_button{ 
+                margin-top: -30px;                                
+                margin-left: 160px;
+            }        
+
+
 
             button {  
             
@@ -78,7 +83,8 @@
                 background: #3094ff;
                 border-radius: 5px;
                 font-size: 16px;
-                outline: 0
+                outline: 0;
+                margin-top:30px;
             }
             
             .login-main-text {
@@ -109,6 +115,19 @@
                 background-color: #08577f !important;  
                 color: #fff;            
             }
+
+            .range-max,.range-min {
+                display: inline-block;
+                padding: 0 5px;
+                /* margin-left: 30px; */
+            }
+
+            .speed-input{
+                margin-left:80px ;
+            }
+
+            
+
         </style>
     </head>
 
@@ -120,15 +139,24 @@
 
             <section class="commands" >
                 <input type="image" src="https://static.thenounproject.com/png/1384177-200.png" id="up_button"/>
-                <input type="image" src="https://static.thenounproject.com/png/607543-200.png" id="left_button"/>
+                <input type="image" src="https://static.thenounproject.com/png/1384175-200.png" id="left_button"/>
                 <input type="image" src="https://static.thenounproject.com/png/1384180-200.png" id="right_button"/>       
                 <input type="image" src="https://static.thenounproject.com/png/1384181-200.png" id="down_button"/>
+
+                <div class="speed-input" id="speed-group">
+                    <label for="speed">Velocidad</label>
+                    <div class="range-min">0</div>
+                    <input type="range" id="speed" min="0%" max="100%" value="50%" class="default-action">
+                    <div class="range-max">100%</div>     
+                </div>
             </section>
 
             <section id="buttons">
                 <button id="toggle-stream">Start Stream</button>
                 <!--Agregar botón de audio-->
             </section>
+
+
             
         </div>
 
