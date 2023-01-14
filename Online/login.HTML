@@ -4,7 +4,7 @@
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
         <style>
             body {
-                font-family: "Courier New", monospace;
+                font-family: "fantasy", monospace;
             }
             
             .main-head {
@@ -14,7 +14,7 @@
             
             .sidenav {
                 height: 100%;
-                background-image: linear-gradient(rgb(16, 187, 245),rgb(37, 247, 37));
+                background-image: linear-gradient(rgb(252, 232, 4),rgb(253, 255, 113));
                 background-repeat: no-repeat;
                 background-size: cover;
                 background-color: whitesmoke;
@@ -48,18 +48,24 @@
                 }  
             } 
 
+            .commands{
+                margin-left: 30px;
+            }
+
             .commands #up_button{  
-                margin-top: -80px;              
+                margin-top: -50px;              
                 margin-left:160px;
+ 
             }
 
             .commands #left_button{
                 margin-top: -30px;               
-                margin-left: 55px;
+                margin-left: 95px;
             }
 
             .commands #right_button{
-                margin-top: -30px;            
+                margin-top: -30px;  
+                margin-left: 0px;          
        
             }
 
@@ -79,7 +85,7 @@
                 line-height: 28px;
                 cursor: pointer;
                 color: #fff;
-                background: #3094ff;
+                background: #000000;
                 border-radius: 5px;
                 font-size: 16px;
                 outline: 0;
@@ -118,13 +124,23 @@
             .range-max,.range-min {
                 display: inline-block;
                 padding: 0 5px;
-                /* margin-left: 30px; */
+              
             }
 
             .speed-input{
-                margin-left:80px ;
+                margin-left:30px ;
             }
 
+            .form-control{
+                margin-top:-40px;
+            }
+
+ 
+
+      
+
+         
+   
             
 
         </style>
@@ -137,17 +153,40 @@
             </div>
 
             <section class="commands" >
-                <input type="image" src="https://static.thenounproject.com/png/1384177-200.png" id="up_button"/>
-                <input type="image" src="https://static.thenounproject.com/png/1384175-200.png" id="left_button"/>
-                <input type="image" src="https://static.thenounproject.com/png/1384180-200.png" id="right_button"/>       
-                <input type="image" src="https://static.thenounproject.com/png/1384181-200.png" id="down_button"/>
 
+                <div class="command-buttons" id="buttons">
+                    <input type="image" src="https://static.thenounproject.com/png/1384177-200.png" id="up_button" height="120" width="120"/>
+                    <input type="image" src="https://static.thenounproject.com/png/1384175-200.png" id="left_button" height="120" width="120"/>
+                    <input type="image" src="https://static.thenounproject.com/png/1384180-200.png" id="right_button" height="120" width="120"/>       
+                    <input type="image" src="https://static.thenounproject.com/png/1384181-200.png" id="down_button" height="120" width="120"/>
+                </div>
+                
                 <div class="speed-input" id="speed-group">
                     <label for="speed">Velocidad</label>
                     <div class="range-min">0</div>
                     <input type="range" id="speed" min="0%" max="100%" value="50%" class="default-action">
                     <div class="range-max">100%</div>     
                 </div>
+                    
+                  
+                <p class="insert-message">Ingrese mensaje</p>
+                
+                <div class="container">
+                    <form> 
+                        <div class="form-row">     
+                            <div class="col-auto">                                    
+                                <input type="text" class="form-control" name="message" id="message" placeholder="Mensaje" maxlength="300" size="40" >
+                            </div>
+
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </div> 
+                        </div>           
+                    </form>
+                </div>
+
+                
+
             </section>
 
             <section id="buttons">
@@ -227,12 +266,12 @@
                 }
             }
 
-            navigator.mediaDevices.getUserMedia({
-                    audio: true,
-                    video: true
-            }).then((stream) => {
-                console.log(stream)
-            }).catch((error) => console.log(error))
+            // navigator.mediaDevices.getUserMedia({
+            //         audio: true,
+            //         video: true
+            // }).then((stream) => {
+            //     console.log(stream)
+            // }).catch((error) => console.log(error))
 
             function updateConfig (el) {
                 let value
