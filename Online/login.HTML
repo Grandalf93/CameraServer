@@ -172,14 +172,14 @@
                 <p class="insert-message">Ingrese mensaje</p>
                 
                 <div class="container">
-                    <form> 
+                    <form id="tts-form"> 
                         <div class="form-row">     
                             <div class="col-auto">                                    
                                 <input type="text" class="form-control" name="message" id="message" placeholder="Mensaje" maxlength="300" size="40" >
                             </div>
 
                             <div class="col-auto">
-                                <button type="submit" class="btn btn-primary">Enviar</button>
+                                <button type="submit" id="submit-button" class="btn btn-primary">Enviar</button>
                             </div> 
                         </div>           
                     </form>
@@ -349,7 +349,7 @@
                 if (streamEnabled) {
                 stopStream()
                 } else {
-                startStream()
+                startstartStream()
                 }
             }
 
@@ -419,9 +419,21 @@
 
 
             const motorSpeed = document.getElementById("speed");
-
             motorSpeed.onchange = () =>{updateMotor(motorSpeed.id, motorSpeed.value)};
 
+
+            var messageForm = document.getElementById("tts-form");
+
+            messageForm.addEventListener ('submit',function(event){
+                event.preventDefault()
+                var messageTts = document.getElementById('message').value;
+
+                const messageQuery = `${baseHost}/message?var=${'tts'}&val=${messageTts}`
+                fetch(messageQuery)
+                .then(response => {
+                    console.log(`request to ${messageQuery} finished, status: ${response.status}`)
+                })                
+                
             })
         
         </script>        

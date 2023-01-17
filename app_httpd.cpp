@@ -9,25 +9,7 @@
 #include "fd_forward.h"
 #include "fr_forward.h"
 
-//#define ENROLL_CONFIRM_TIMES 5
-//#define FACE_ID_SAVE_NUMBER 7
-//
-//#define FACE_COLOR_WHITE  0x00FFFFFF
-//#define FACE_COLOR_BLACK  0x00000000
-//#define FACE_COLOR_RED    0x000000FF
-//#define FACE_COLOR_GREEN  0x0000FF00
-//#define FACE_COLOR_BLUE   0x00FF0000
-//#define FACE_COLOR_YELLOW (FACE_COLOR_RED | FACE_COLOR_GREEN)
-//#define FACE_COLOR_CYAN   (FACE_COLOR_BLUE | FACE_COLOR_GREEN)
-//#define FACE_COLOR_PURPLE (FACE_COLOR_BLUE | FACE_COLOR_RED)
-//
-//typedef struct {
-//        size_t size; //number of values used for filtering
-//        size_t index; //current value index
-//        size_t count; //value count
-//        int sum;
-//        int * values; //array to be filled with values
-//} ra_filter_t;
+#define CONFIG_HTTPD_MAX_REQ_HDR_LEN 1024
 
 typedef struct {
         httpd_req_t *req;
@@ -101,8 +83,7 @@ static esp_err_t stream_handler(httpd_req_t *req){
             } else {
 
                 image_matrix = dl_matrix3du_alloc(1, fb->width, fb->height, 3);
-                Serial.println("hola");
-
+               
                 if (!image_matrix) {
                     Serial.println("dl_matrix3du_alloc failed");
                     res = ESP_FAIL;
@@ -325,10 +306,62 @@ static esp_err_t motor_handler(httpd_req_t *req){
         Serial.println(val);        
       }
 
+     if (!strcmp(variable, "speed")){
+      Serial.println(val);      
+      }
+
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     return httpd_resp_send(req, NULL, 0);
   
 }
+
+
+
+
+
+static esp_err_t tts_handler(httpd_req_t *req){
+    char*  buf;
+    size_t buf_len;
+    char variable[32] = {0,};
+    char value[32] = {0,};
+
+
+    buf_len = httpd_req_get_url_query_len(req) + 1;
+    if (buf_len > 1) {
+        buf = (char*)malloc(buf_len);
+        if(!buf){
+            httpd_resp_send_500(req);
+            return ESP_FAIL;
+        }
+        if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
+            if (httpd_query_key_value(buf, "var", variable, sizeof(variable)) == ESP_OK &&
+                httpd_query_key_value(buf, "val", value, sizeof(value)) == ESP_OK){
+            } else {
+                free(buf);
+                httpd_resp_send_404(req);
+                return ESP_FAIL;
+            }
+        } else {
+            free(buf);
+            httpd_resp_send_404(req);
+            return ESP_FAIL;
+        }
+        free(buf);
+    } else {
+        httpd_resp_send_404(req);
+        return ESP_FAIL;
+    }
+
+    String val = value;
+    Serial.println(val);
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    return httpd_resp_send(req, NULL, 0);
+  
+}
+
+
+
 
 void startCameraServer(){
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
@@ -370,6 +403,13 @@ void startCameraServer(){
         .user_ctx  = NULL
     };
 
+        httpd_uri_t tts_uri = {
+        .uri       = "/message",
+        .method    = HTTP_GET,
+        .handler   = tts_handler,
+        .user_ctx  = NULL
+    };
+
 
    
     
@@ -380,6 +420,7 @@ void startCameraServer(){
         httpd_register_uri_handler(camera_httpd, &status_uri);
  
         httpd_register_uri_handler(camera_httpd, &motor_uri); //OJO AGREGADOO, SE DEBE REGISTRAR 
+        httpd_register_uri_handler(camera_httpd, &tts_uri);
     }
 
     config.server_port += 1;
