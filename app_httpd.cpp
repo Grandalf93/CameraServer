@@ -4,12 +4,14 @@
 #include "img_converters.h"
 #include "camera_index.h"
 #include "Arduino.h"
+#include "Audio.h"
+#include "google-tts.h" 
+
 
 #include "fb_gfx.h"
 #include "fd_forward.h"
 #include "fr_forward.h"
 
-#define CONFIG_HTTPD_MAX_REQ_HDR_LEN 1024
 
 typedef struct {
         httpd_req_t *req;
@@ -23,6 +25,8 @@ static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %
 
 httpd_handle_t stream_httpd = NULL;
 httpd_handle_t camera_httpd = NULL;
+
+
 
 
 
@@ -257,9 +261,6 @@ static esp_err_t index_handler(httpd_req_t *req){
     httpd_resp_set_type(req, "text/html");
     httpd_resp_set_hdr(req, "Content-Encoding", "gzip");
     sensor_t * s = esp_camera_sensor_get();
-    if (s->id.PID == OV3660_PID) {
-        return httpd_resp_send(req, (const char *)index_ov3660_html_gz, index_ov3660_html_gz_len);
-    }
     return httpd_resp_send(req, (const char *)index_ov2640_html_gz, index_ov2640_html_gz_len);
 }
 
@@ -324,6 +325,7 @@ static esp_err_t tts_handler(httpd_req_t *req){
     size_t buf_len;
     char variable[32] = {0,};
     char value[32] = {0,};
+    TTS tts;
 
 
     buf_len = httpd_req_get_url_query_len(req) + 1;
@@ -353,7 +355,10 @@ static esp_err_t tts_handler(httpd_req_t *req){
     }
 
     String val = value;
+    val.replace("%20", " ");
     Serial.println(val);
+    //Serial.println(tts.getSpeechUrl("こんにちは、世界！", "ja"));
+    Serial.println(tts.getSpeechUrl(val, "es"));
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     return httpd_resp_send(req, NULL, 0);
